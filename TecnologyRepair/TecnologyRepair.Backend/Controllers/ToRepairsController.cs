@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TecnologyRepair.Shared.Entities;
 
 namespace TecnologyRepair.Backend.Controllers
