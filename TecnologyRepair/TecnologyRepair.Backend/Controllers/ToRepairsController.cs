@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TecnologyRepair.Backend.Data;
 using TecnologyRepair.Shared.Entities;
 
 namespace TecnologyRepair.Backend.Controllers
@@ -7,40 +8,46 @@ namespace TecnologyRepair.Backend.Controllers
     [ApiController]
     public class ToRepairsController : ControllerBase
     {
-        private List<ToRepair> _toRepair;
+        private readonly DataContext _context;
 
-        public ToRepairsController()
+        public ToRepairsController(DataContext context)
         {
-            _toRepair = new List<ToRepair>
-            {
-               new ToRepair {Id = 1, TypeOfEquipment = "", Brand = "", DateOfAdmission = DateTime.Now , RetirementDate = DateTime.Now, OwnerNames = "", OwnerLastName = "",  OwnerPhone = "", OwnerEmail = "", DiagnosisOfTheDamage = "", TechnicianComments = "" , RepairStatus = "", RepairPrice = 10000 },
-               new ToRepair {Id = 2, TypeOfEquipment = "", Brand = "", DateOfAdmission = DateTime.Now , RetirementDate = DateTime.Now, OwnerNames = "", OwnerLastName = "",  OwnerPhone = "", OwnerEmail = "", DiagnosisOfTheDamage = "", TechnicianComments = "" , RepairStatus = "", RepairPrice = 10000 },
-               new ToRepair {Id = 3, TypeOfEquipment = "", Brand = "", DateOfAdmission = DateTime.Now , RetirementDate = DateTime.Now, OwnerNames = "", OwnerLastName = "",  OwnerPhone = "", OwnerEmail = "", DiagnosisOfTheDamage = "", TechnicianComments = "" , RepairStatus = "", RepairPrice = 10000 },
-              };
+            _context = context;
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_toRepair);
+            return Ok(_context.ToRepairs.ToList());
+        }
+        [HttpGet("{id:int}")]
+        public IActionResult Get(int id)
+        {
+            var repair = _context.ToRepairs.FirstOrDefault(x => x.Id == id);
+            if (repair == null)
+            {
+                return NotFound();
+            }
+            return Ok(_context.ToRepairs.ToList());
         }
 
         [HttpPost]
         public IActionResult Post(ToRepair toRepair)
         {
-            _toRepair.Add(toRepair);
-
+            _context.Add(toRepair);
+            _context.SaveChanges();
             return Ok(toRepair);
         }
 
         [HttpPut]
         public IActionResult Put(ToRepair toRepair)
         {
-            var repair = _toRepair.FirstOrDefault(t => t.Id == toRepair.Id);
+            var repair = _context.ToRepairs.FirstOrDefault(x => x.Id == toRepair.Id);
             if (repair == null)
             {
                 return NotFound();
             }
+
             repair.TypeOfEquipment = toRepair.TypeOfEquipment;
             repair.Brand = toRepair.Brand;
             repair.DateOfAdmission = DateTime.Now;
@@ -54,19 +61,22 @@ namespace TecnologyRepair.Backend.Controllers
             repair.RepairStatus = toRepair.RepairStatus;
             repair.RepairPrice = toRepair.RepairPrice;
 
+            _context.Update(repair);
+            _context.SaveChanges();
             return Ok(repair);
+          
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var repair = _toRepair.FirstOrDefault(t => t.Id == id);
+            var repair = _context.ToRepairs.FirstOrDefault(x => x.Id == id);
             if (repair == null)
             {
                 return NotFound();
             }
-
-            _toRepair.Remove(repair);
+            _context.Remove(repair);
+            _context.SaveChanges();
             return NoContent();
         }
 
