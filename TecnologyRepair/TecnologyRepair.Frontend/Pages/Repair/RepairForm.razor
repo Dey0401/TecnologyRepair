@@ -1,0 +1,117 @@
+﻿<EditForm Model = "ToRepair" OnValidSubmit="onValidSubmit"> 
+	<DataAnnotationsValidator/>
+
+	<div class ="mb-3">
+		<label>TypeOfEquipment:</label>
+		<div>
+			<InputText class="form-control" @bind-Value= "@ToRepair.TypeOfEquipment"/>
+			<ValidationMessage For="@(()=>ToRepair.TypeOfEquipment)"/>
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<label>Brand:</label>
+		<div>
+			<InputText class="form-control" @bind-Value="@ToRepair.Brand" />
+			<ValidationMessage For="@(()=>ToRepair.Brand)" />
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<label>DateOfAdmission:</label>
+		<div>
+			<InputDate class="form-control" @bind-Value="@ToRepair.DateOfAdmission" />
+			<ValidationMessage For="@(()=>ToRepair.DateOfAdmission)" />
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<label>RetirementDate:</label>
+		<div>
+			<InputDate class="form-control" @bind-Value="@ToRepair.RetirementDate" />
+			<ValidationMessage For="@(()=>ToRepair.RetirementDate)" />
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<label>OwnerNames:</label>
+		<div>
+			<InputText class="form-control" @bind-Value="@ToRepair.OwnerNames" />
+			<ValidationMessage For="@(()=>ToRepair.OwnerNames)" />
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<label>OwnerLastName:</label>
+		<div>
+			<InputText class="form-control" @bind-Value="@ToRepair.OwnerLastName" />
+			<ValidationMessage For="@(()=>ToRepair.OwnerLastName)" />
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<label>OwnerPhone:</label>
+		<div>
+			<InputText class="form-control" @bind-Value="@ToRepair.OwnerPhone" />
+			<ValidationMessage For="@(()=>ToRepair.OwnerPhone)" />
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<label>OwnerEmail:</label>
+		<div>
+			<InputText class="form-control" @bind-Value="@ToRepair.OwnerEmail" />
+			<ValidationMessage For="@(()=>ToRepair.OwnerEmail)" />
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<label>DiagnosisOfTheDamage:</label>
+		<div>
+			<InputText class="form-control" @bind-Value="@ToRepair.DiagnosisOfTheDamage" />
+			<ValidationMessage For="@(()=>ToRepair.DiagnosisOfTheDamage)" />
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<label>TechnicianComments:</label>
+		<div>
+			<InputText class="form-control" @bind-Value="@ToRepair.TechnicianComments" />
+			<ValidationMessage For="@(()=>ToRepair.TechnicianComments)" />
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<label>RepairStatus:</label>
+		<div>
+			<InputText class="form-control" @bind-Value="@ToRepair.RepairStatus" />
+			<ValidationMessage For="@(()=>ToRepair.RepairStatus)" />
+		</div>
+	</div>
+
+	<div class="mb-3">
+		<label>RepairPrice:</label>
+		<div>
+			<InputNumber 
+				class="form-control" @bind-Value="@ToRepair.RepairPrice" />
+			<ValidationMessage For="@(()=>ToRepair.RepairPrice)" />
+		</div>
+	</div>
+	<button class=" = btn btn-primary" type="submit">Save</button>
+	<button class=" = btn btn-subcess" @onclick="ReturnAction">Return</button>
+</EditForm>
+<h3>RepairForm</h3>
+
+@code {
+	[EditorRequired]
+	[Parameter]
+	public ToRepair ToRepair { get; set; } = null!;
+
+	[EditorRequired]
+	[Parameter]
+	public EventCallback onValidSubmit { get; set; }
+
+	[EditorRequired]
+	[Parameter]
+	public EventCallback ReturnAction { get; set; }
+}

@@ -18,17 +18,18 @@ namespace TecnologyRepair.Backend.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_context.ToRepairs.ToList());
+            return Ok(_context.ToRepairs.OrderBy(t => t.DateOfAdmission).ToList());
         }
+
         [HttpGet("{id:int}")]
         public IActionResult Get(int id)
         {
-            var repair = _context.ToRepairs.FirstOrDefault(x => x.Id == id);
-            if (repair == null)
+            var task = _context.ToRepairs.FirstOrDefault(x => x.Id == id);
+            if (task == null)
             {
                 return NotFound();
             }
-            return Ok(_context.ToRepairs.ToList());
+            return Ok(task);
         }
 
         [HttpPost]
@@ -67,7 +68,7 @@ namespace TecnologyRepair.Backend.Controllers
           
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
         {
             var repair = _context.ToRepairs.FirstOrDefault(x => x.Id == id);

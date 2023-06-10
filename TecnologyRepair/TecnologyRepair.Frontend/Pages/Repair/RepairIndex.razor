@@ -1,0 +1,148 @@
+﻿@page "/repair"
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+
+
+
+<h3>Equipment in repair</h3>
+
+<a href="/repair/add" class=" = btn btn-primary">Add new equipment</a>
+@if (Repairs == null)
+{
+    <p>Loanding...</p>
+}
+else
+{
+    <table class="table">
+       <thead>
+        <th>Type</th>
+        <th>Brand</th>
+        <th>Admission</th>
+        <th>Retirement</th>
+        <th>Owner names</th>
+        <th>Last name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Diagnosis</th>
+        <th>Technician comments</th>
+        <th>Status</th>
+        <th>Price</th>
+        <th></th>
+       </thead>
+       <tbody>
+           @foreach (var rapair in Repairs)
+           {
+           <tr>
+                    <th>@rapair.TypeOfEquipment</th>
+                    <th>@rapair.Brand</th>
+                    <th>@($"{rapair.DateOfAdmission:yyyy/MM/dd}")</th>
+                    <th>@($"{rapair.RetirementDate:yyyy/MM/dd}") </th>
+                    <th>@rapair.OwnerNames</th>
+                    <th>@rapair.OwnerLastName</th>
+                    <th>@rapair.OwnerPhone</th>
+                    <th>@rapair.OwnerPhone</th>
+                    <th>@rapair.DiagnosisOfTheDamage</th>
+                    <th>@rapair.TechnicianComments</th>
+                    <th>@rapair.RepairStatus</th>
+                    <th>@rapair.RepairPrice</th>
+                    <th>
+                        <a href="/repair/edit/@rapair.Id" class=" = btn btn-warning">Edit</a>
+                        <button class="btn btn-danger" @onclick=@(() => DeleteAsync(rapair))>Delete</button>
+                    </th>
+           </tr>
+           }
+       </tbody>
+   </table>
+}
+
+@code {
+    public List<ToRepair>? Repairs { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTasksAsync();
+    }
+
+    private async Task LoadTasksAsync()
+    {
+        var response = await repository.GetAsync<List<ToRepair>>("api/ToRepairs");
+        if (!response.IsSuccess)
+        {
+            await sweetAlertService.FireAsync("Error", response.Message, SweetAlertIcon.Error);
+            return;
+        }
+        Repairs = response.Result;
+    }
+
+    private async Task DeleteAsync(ToRepair repairs)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirm",
+                Text = $"Are you sure to delete the equipment: {repairs.TypeOfEquipment}?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHttp = await repository.DeleteAsync<ToRepair>($"api/ToRepairs/{repairs.Id}");
+        if (!responseHttp.IsSuccess)
+        {
+            await sweetAlertService.FireAsync("Error", responseHttp.Message, SweetAlertIcon.Error);
+            return;
+        }
+
+        LoadTasksAsync();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowCloseButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Info, message: "Equipement deleted successfully.");
+    }
+
+    private async Task CompleteUncompleteAsync(ToRepair repairs)
+    {
+        var message = repairs.TypeOfEquipment;
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirm",
+                Text = $"Are you sure to {message} the equipement: {repairs.TypeOfEquipment}?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHttp = await repository.PutAsync($"api/MyTasks", repairs);
+        if (!responseHttp.IsSuccess)
+        {
+            await sweetAlertService.FireAsync("Error", responseHttp.Message, SweetAlertIcon.Error);
+            return;
+        }
+
+        LoadTasksAsync();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowCloseButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Info, message: $"repairs {message} successfully.");
+    }
+}

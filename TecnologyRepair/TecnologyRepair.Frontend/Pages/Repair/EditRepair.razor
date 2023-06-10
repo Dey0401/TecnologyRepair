@@ -1,0 +1,57 @@
+﻿@page "/repair/edit/{Id:int}"
+@inject IRepository repository
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+
+<h3>Edit Repair</h3>
+
+@if (toRepair is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <RepairForm ToRepair="toRepair" onValidSubmit="SaveAsync" ReturnAction="Return"/>
+}
+
+@code {
+    private ToRepair? toRepair;
+    [Parameter]
+    public int Id { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var responseHttp = await repository.GetAsync<ToRepair>($"api/ToRepairs/{Id}");
+        if (!responseHttp.IsSuccess)
+        {
+            await sweetAlertService.FireAsync("Error", responseHttp.Message, SweetAlertIcon.Error);
+            return;
+        }
+        toRepair = responseHttp.Result;
+    }
+
+    private async Task SaveAsync()
+    {
+        var responseHttp = await repository.PutAsync("/api/ToRepairs/", toRepair);
+        if (!responseHttp.IsSuccess)
+        {
+            await sweetAlertService.FireAsync("Error", responseHttp.Message, SweetAlertIcon.Error);
+            return;
+        }
+        Return();
+
+        var toast = sweetAlertService.Mixin(new SweetAlertOptions
+            {
+                Toast = true,
+                Position = SweetAlertPosition.BottomEnd,
+                ShowCloseButton = true,
+                Timer = 3000
+            });
+        await toast.FireAsync(icon: SweetAlertIcon.Info, message: "Servicies updated successfully.");
+    }
+
+    private void Return()
+    {
+        navigationManager.NavigateTo("/repair");
+    }
+}

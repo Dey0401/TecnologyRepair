@@ -1,0 +1,38 @@
+﻿@page "/repair/add"
+@inject IRepository repository 
+@inject SweetAlertService sweetAlertService
+@inject NavigationManager navigationManager
+
+<h3>Add new equipment</h3>
+
+<RepairForm ToRepair="toRepair" onValidSubmit="CreateAsync" ReturnAction="Return" />
+
+@code {
+	public ToRepair toRepair = new() { DateOfAdmission = DateTime.Today, RetirementDate = DateTime.Today };
+
+	private async Task CreateAsync()
+	{
+		var responseHttp = await repository.PostAsync("/api/ToRepairs", toRepair);
+		if (!responseHttp.IsSuccess)
+		{
+			await sweetAlertService.FireAsync("Error", responseHttp.Message, SweetAlertIcon.Error);
+			return;
+		}
+		Return();
+		var toast = sweetAlertService.Mixin(new SweetAlertOptions
+			{
+				Toast = true,
+				Position = SweetAlertPosition.BottomLeft,
+				ShowCancelButton = true,
+				Timer = 3000
+			});
+			await toast.FireAsync(icon: SweetAlertIcon.Info, message: "New service add successfully.");
+	}
+
+	private void Return()
+	{
+		navigationManager.NavigateTo("/repair");
+	}
+
+
+}
